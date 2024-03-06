@@ -1,6 +1,19 @@
 version: "3"
 
 services:
+  db:
+    image: postgres:15.4
+    restart: unless-stopped
+    ports:
+      - ${DOCKER_DB_PORT}:5432
+    volumes:
+      - pgdata:/data/postgres
+    environment:
+      PGDATA: /data/postgres
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+
   bot:
     build: ./docker/bot
     restart: unless-stopped
@@ -9,3 +22,8 @@ services:
       - ./app:/app
     env_file:
       - ./.env
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
